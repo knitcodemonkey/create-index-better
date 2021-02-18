@@ -1,13 +1,21 @@
 import path from 'path';
 import _ from 'lodash';
 
+function camelize(str){
+  let arr = str.split('-');
+  let capital = arr.map((file, index) => index ? file.charAt(0).toUpperCase() + file.slice(1).toLowerCase() : file);
+  let capitalString = capital.join("");
+
+  return capitalString
+}
+
 const safeVariableName = (fileName) => {
   const indexOfDot = fileName.indexOf('.');
 
   if (indexOfDot === -1) {
-    return fileName;
+    return camelize(fileName);
   } else {
-    return fileName.slice(0, indexOfDot);
+    return camelize(fileName.slice(0, indexOfDot));
   }
 };
 
@@ -34,7 +42,7 @@ const buildExportBlock = (files, config = {}) => {
     }, ['', '']).join('').slice(1);
   } else if (mode === 'default{}') {
     return files.map((fileName) => `import ${safeVariableName(fileName)} from './${fileName}';`).join('\n') +
-    `\nexport default { ${files.map(safeVariableName).join(', ')} };`;
+    `\nexport default { ${files.map(safeVariableName).join(', ')} }`;
   }
 
   throw new Error(`Invalid mode '${mode}'`);
